@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class s_pixel : pixel
+public partial class s_pixel : Pixel
 {
     public override void _Ready()
     {

@@ -5,7 +5,7 @@ using System.Linq;
 
 public partial class GameManager : Node2D
 {
-    //System that handles basic pixel physics (when they arent rigid bodies)
+    //System that handles basic Pixel physics (when they arent rigid bodies)
     private BasePixelPhysicsSystem BPPS;
     private List<Sprite2D> updateMaskList;
 
@@ -30,7 +30,7 @@ public partial class GameManager : Node2D
         {
             UpdateMaskClear();
             
-            foreach(pixel currentPixel in GetChildren().OfType<pixel>())
+            foreach(Pixel currentPixel in GetChildren().OfType<Pixel>())
             {
                 Texture2D debugTexture = GD.Load<Texture2D>("res://Textures/DebugRed.png");
                 if(currentPixel.doUpdate)

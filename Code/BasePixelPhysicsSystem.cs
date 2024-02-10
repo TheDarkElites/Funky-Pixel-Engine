@@ -8,7 +8,7 @@ using System.Linq;
 public partial class BasePixelPhysicsSystem : GodotObject
 {
 	private double last_physics_update;
-	public Dictionary<Vector2, pixel> pixelDict;	
+	public Dictionary<Vector2, Pixel> pixelDict;	
     private Node2D world;
 
     private PixelLib pixelLib;
@@ -19,14 +19,14 @@ public partial class BasePixelPhysicsSystem : GodotObject
     {
         this.world = world;
         last_physics_update = 0;
-        pixelDict = new Dictionary<Vector2, pixel>();
+        pixelDict = new Dictionary<Vector2, Pixel>();
         pixelLib = new PixelLib();
     }
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public void RunSim(double delta)
 	{
-		//Begin pixel simulation
+		//Begin Pixel simulation
 		
 		last_physics_update += delta;
 		if(last_physics_update < GLOB.PHYSSPEED)
@@ -39,9 +39,9 @@ public partial class BasePixelPhysicsSystem : GodotObject
 
         Random rand = new Random(); 
 
-        List<pixel> pixelsToUpdate = new List<pixel>();
+        List<Pixel> pixelsToUpdate = new List<Pixel>();
 
-		foreach (pixel currentPixel in world.GetChildren().OfType<pixel>()) 
+		foreach (Pixel currentPixel in world.GetChildren().OfType<Pixel>()) 
 		{
             bool pixelUpdated = false;
             
@@ -73,7 +73,7 @@ public partial class BasePixelPhysicsSystem : GodotObject
 			int reqConnections = (int)Math.Ceiling(8 - Math.Clamp(currentPixel.ductility * 16, 0, 4));
             if(pixelLib.GetPixelsInRange(currentPixel.Position, currentPixel.GetType(), ref pixelDict, includeCorners: true).Length < reqConnections)
             {
-                if(currentPixel is solid || currentPixel is liquid)
+                if(currentPixel is Solid || currentPixel is Liquid)
 				{
 					if(pixelLib.PixelCanMoveTo(new Vector2(currentPixel.Position.X, currentPixel.Position.Y + GLOB.PIXSIZE), ref pixelDict, currentPixel))
 					{
@@ -95,7 +95,7 @@ public partial class BasePixelPhysicsSystem : GodotObject
 					}
 				}
 
-				if(currentPixel is liquid && !pixelUpdated)
+				if(currentPixel is Liquid && !pixelUpdated)
 				{
 					if(pixelLib.PixelCanMoveTo(new Vector2(currentPixel.Position.X + GLOB.PIXSIZE, currentPixel.Position.Y), ref pixelDict, currentPixel))
 					{
@@ -126,10 +126,10 @@ public partial class BasePixelPhysicsSystem : GodotObject
 
 		SanatizePixelDict();
 
-        foreach(pixel updateTarget in pixelsToUpdate)
+        foreach(Pixel updateTarget in pixelsToUpdate)
         {   
-            pixel[] pixNeighbors = pixelLib.GetPixelsInRange(updateTarget.Position, typeof(pixel), ref pixelDict, radius: GLOB.PIXELUPDATERADIUS, includeCorners: true, includeSelf: true);
-            foreach(pixel neighbor in pixNeighbors)
+            Pixel[] pixNeighbors = pixelLib.GetPixelsInRange(updateTarget.Position, typeof(Pixel), ref pixelDict, radius: GLOB.PIXELUPDATERADIUS, includeCorners: true, includeSelf: true);
+            foreach(Pixel neighbor in pixNeighbors)
 		    {   
                 neighbor.doUpdate = true;
 		    }
@@ -143,10 +143,10 @@ public partial class BasePixelPhysicsSystem : GodotObject
 		
 	}
 
-	//Sanatizes our pixel dict for invalid values
+	//Sanatizes our Pixel dict for invalid values
 	private void SanatizePixelDict()
 	{
-		foreach(KeyValuePair<Vector2, pixel> pixelPair in pixelDict)
+		foreach(KeyValuePair<Vector2, Pixel> pixelPair in pixelDict)
 		{
 			if(IsInstanceValid(pixelPair.Value))
 			{
@@ -196,10 +196,10 @@ public partial class BasePixelPhysicsSystem : GodotObject
 				case 1:
 					if(Input.IsMouseButtonPressed(MouseButton.Left))
 					{
-						pixel newPix = pixelLib.CreatePixel(pixelID, mousePosition, ref pixelDict);
+						Pixel newPix = pixelLib.CreatePixel(pixelID, mousePosition, ref pixelDict);
 						if(newPix == null)
 						{
-							GD.PushError(String.Format("Newly created pixel was null!"));
+							GD.PushError(String.Format("Newly created Pixel was null!"));
 							break;
 						}
 						world.AddChild(newPix);
@@ -220,10 +220,10 @@ public partial class BasePixelPhysicsSystem : GodotObject
 						{
 							if(Input.IsMouseButtonPressed(MouseButton.Left))
 							{
-								pixel tempPix = pixelLib.CreatePixel(pixelID, new Vector2(mousePosition.X + (x * GLOB.PIXSIZE), mousePosition.Y + (y * GLOB.PIXSIZE)), ref pixelDict);
+								Pixel tempPix = pixelLib.CreatePixel(pixelID, new Vector2(mousePosition.X + (x * GLOB.PIXSIZE), mousePosition.Y + (y * GLOB.PIXSIZE)), ref pixelDict);
 								if(tempPix == null)
 								{
-									//GD.PushError(String.Format("Newly created pixel was null!"));
+									//GD.PushError(String.Format("Newly created Pixel was null!"));
 									continue;
 								}
 								world.AddChild(tempPix);

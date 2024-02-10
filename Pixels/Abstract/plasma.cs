@@ -1,6 +1,6 @@
 using Godot;
 using System;
 
-public abstract partial class plasma : pixel
+public abstract partial class Plasma : Pixel
 {
 }

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public abstract partial class pixel : Node2D
+public abstract partial class Pixel : Node2D
 {
 	//Update handler
 	public bool doUpdate;

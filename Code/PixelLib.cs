@@ -5,13 +5,13 @@ using System.Linq;
 
 public class PixelLib
 {	
-	//Converts normal vec2 position to pixel grid
+	//Converts normal vec2 position to Pixel grid
 	public Vector2 GetPixelCoordinates(Vector2 cords)
 	{
 		return new Vector2(GLOB.PIXSIZE*((int)(cords.X+GLOB.PIXSIZE-1)/GLOB.PIXSIZE), GLOB.PIXSIZE*((int)(cords.Y+GLOB.PIXSIZE-1)/GLOB.PIXSIZE));
 	}
-	//Moves a pixel
-	public void MovePixel(Vector2 location, pixel targPix, ref Dictionary<Vector2, pixel> pixelDict)
+	//Moves a Pixel
+	public void MovePixel(Vector2 location, Pixel targPix, ref Dictionary<Vector2, Pixel> pixelDict, bool exchange = true)
 	{	
 		if(!PixelCanMoveTo(location, ref pixelDict, targPix))
 		{
@@ -20,22 +20,30 @@ public class PixelLib
 		}
 		location = GetPixelCoordinates(location);
 		
+		if(exchange && pixelDict.ContainsKey(location))
+		{
+			Pixel exchangePixel = pixelDict[location];
+			pixelDict.Remove(location);
+			exchangePixel.Position = targPix.Position;
+			pixelDict.Add(targPix.Position, exchangePixel);
+		}
+		
 		pixelDict.Remove(targPix.Position);
 		targPix.Position = location;
 		pixelDict.Add(targPix.Position, targPix);
 
-		foreach(pixel neighbor in GetPixelsInRange(targPix.Position, typeof(pixel), ref pixelDict, radius: GLOB.PIXELUPDATERADIUS, includeSelf: true, includeCorners: true))
+		foreach(Pixel neighbor in GetPixelsInRange(targPix.Position, typeof(Pixel), ref pixelDict, radius: GLOB.PIXELUPDATERADIUS, includeSelf: true, includeCorners: true))
 		{
 			neighbor.doUpdate = true;
 		}
 	}
 
-	//Deletes a pixel
-	public void DeletePixel(pixel targPix, ref Dictionary<Vector2, pixel> pixelDict)
+	//Deletes a Pixel
+	public void DeletePixel(Pixel targPix, ref Dictionary<Vector2, Pixel> pixelDict)
 	{
 		targPix.Position = GetPixelCoordinates(targPix.Position);
 
-		foreach(pixel neighbor in GetPixelsInRange(targPix.Position, typeof(pixel), ref pixelDict, radius: GLOB.PIXELUPDATERADIUS, includeSelf: true, includeCorners: true))
+		foreach(Pixel neighbor in GetPixelsInRange(targPix.Position, typeof(Pixel), ref pixelDict, radius: GLOB.PIXELUPDATERADIUS, includeSelf: true, includeCorners: true))
 		{
 			neighbor.doUpdate = true;
 		}
@@ -44,8 +52,8 @@ public class PixelLib
 		targPix.QueueFree();
 	}
 
-	//Checks if a pixel can move to a specific position
-	public bool PixelCanMoveTo(Vector2 location, ref Dictionary<Vector2, pixel> pixelDict)
+	//Checks if a Pixel can move to a specific position
+	public bool PixelCanMoveTo(Vector2 location, ref Dictionary<Vector2, Pixel> pixelDict)
 	{
 		location = GetPixelCoordinates(location);
 		
@@ -56,28 +64,28 @@ public class PixelLib
 		return true;
 	}
 
-	public bool PixelCanMoveTo(Vector2 location, ref Dictionary<Vector2, pixel> pixelDict, pixel targPix)
+	public bool PixelCanMoveTo(Vector2 location, ref Dictionary<Vector2, Pixel> pixelDict, Pixel targPix)
 	{
 		location = GetPixelCoordinates(location);
 		
 		if(pixelDict.ContainsKey(location))
-		{
+		{	
 			return false;
 		}
 		return true;
 	}
 
-	public pixel CreatePixel(string pixIDPath, ref Dictionary<Vector2, pixel> pixelDict)
+	public Pixel CreatePixel(string pixIDPath, ref Dictionary<Vector2, Pixel> pixelDict)
 	{
 		if(!PixelCanMoveTo(Vector2.Zero, ref pixelDict))
 		{
 			//GD.PushError(String.Format("Pixel attempted to be created in an invalid position, {0}.",Vector2.Zero));
 			return null;
 		}
-		pixel newPix = (pixel)GD.Load<PackedScene>(pixIDPath).Instantiate();
+		Pixel newPix = (Pixel)GD.Load<PackedScene>(pixIDPath).Instantiate();
 		pixelDict[newPix.Position] = newPix;
 
-		foreach(pixel neighbor in GetPixelsInRange(newPix.Position, typeof(pixel), ref pixelDict, radius: GLOB.PIXELUPDATERADIUS, includeSelf: true, includeCorners: true))
+		foreach(Pixel neighbor in GetPixelsInRange(newPix.Position, typeof(Pixel), ref pixelDict, radius: GLOB.PIXELUPDATERADIUS, includeSelf: true, includeCorners: true))
 		{
 			neighbor.doUpdate = true;
 		}
@@ -85,7 +93,7 @@ public class PixelLib
 		return newPix;
 	}
 
-	public pixel CreatePixel(string pixIDPath, Vector2 location, ref Dictionary<Vector2, pixel> pixelDict)
+	public Pixel CreatePixel(string pixIDPath, Vector2 location, ref Dictionary<Vector2, Pixel> pixelDict)
 	{
 		if(!PixelCanMoveTo(location, ref pixelDict))
 		{
@@ -94,15 +102,15 @@ public class PixelLib
 		}
 		location = GetPixelCoordinates(location);
 
-		pixel newPix = (pixel)GD.Load<PackedScene>(pixIDPath).Instantiate();
+		Pixel newPix = (Pixel)GD.Load<PackedScene>(pixIDPath).Instantiate();
 		MovePixel(location, newPix, ref pixelDict);
 		return newPix;
 	}
 
-	//Returns all pixel neighbors of type T
-    public pixel[] GetPixelsInRange(Vector2 location, Type pixType, ref Dictionary<Vector2, pixel> pixelDict, int radius = 1, bool includeCorners = false, bool includeSelf = false)
+	//Returns all Pixel neighbors of type T
+    public Pixel[] GetPixelsInRange(Vector2 location, Type pixType, ref Dictionary<Vector2, Pixel> pixelDict, int radius = 1, bool includeCorners = false, bool includeSelf = false)
     {   
-        List<pixel> neighbors = new List<pixel>();
+        List<Pixel> neighbors = new List<Pixel>();
         for(int x = -radius; x <= radius; x++)
         {
             for(int y = -radius; y <= radius; y++)

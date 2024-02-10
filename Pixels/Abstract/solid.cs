@@ -1,6 +1,6 @@
 using Godot;
 using System;
 
-public abstract partial class solid : pixel
+public abstract partial class Solid : Pixel
 {
 }
