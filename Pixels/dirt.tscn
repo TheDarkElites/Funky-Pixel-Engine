@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://bpqnmklwg2ki8"]
+
+[ext_resource type="Script" path="res://Pixels/dirt.cs" id="1_fr8p3"]
+[ext_resource type="Texture2D" uid="uid://1kvon8885fhq" path="res://Textures/Pixels/dirt.png" id="2_hspfo"]
+
+[node name="Dirt" type="Node2D"]
+script = ExtResource("1_fr8p3")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(2, 2)
+scale = Vector2(4, 4)
+texture = ExtResource("2_hspfo")
