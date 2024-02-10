@@ -7,6 +7,7 @@ public partial class water : Liquid
 	public override void _Ready()
 	{
 		base._Ready();
+		density = 0.3;
 
 		Name = "Water";
 	}

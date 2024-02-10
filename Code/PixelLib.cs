@@ -20,17 +20,23 @@ public class PixelLib
 		}
 		location = GetPixelCoordinates(location);
 		
+		Pixel exchangePixel = null;
+		
 		if(exchange && pixelDict.ContainsKey(location))
 		{
-			Pixel exchangePixel = pixelDict[location];
+			exchangePixel = pixelDict[location];
 			pixelDict.Remove(location);
 			exchangePixel.Position = targPix.Position;
-			pixelDict.Add(targPix.Position, exchangePixel);
 		}
 		
 		pixelDict.Remove(targPix.Position);
 		targPix.Position = location;
 		pixelDict.Add(targPix.Position, targPix);
+
+		if(exchange && exchangePixel != null)
+		{
+			pixelDict.Add(exchangePixel.Position, exchangePixel);
+		}
 
 		foreach(Pixel neighbor in GetPixelsInRange(targPix.Position, typeof(Pixel), ref pixelDict, radius: GLOB.PIXELUPDATERADIUS, includeSelf: true, includeCorners: true))
 		{
@@ -69,8 +75,31 @@ public class PixelLib
 		location = GetPixelCoordinates(location);
 		
 		if(pixelDict.ContainsKey(location))
-		{	
-			return false;
+		{
+			Pixel blockingPixel = pixelDict[location];
+			
+			if(blockingPixel.isStatic)
+			{
+				return false;
+			}
+			if(targPix is Solid && blockingPixel is Solid)
+			{
+				return false;
+			}
+			if(targPix is Liquid && blockingPixel is Solid)
+			{
+				return false;
+			}
+			if(targPix is Liquid && blockingPixel is Liquid)
+			{
+				Liquid targPixLiq = (Liquid)targPix;
+				Liquid blockingPixelLiq = (Liquid)blockingPixel;
+				
+				if(targPixLiq.density <= blockingPixelLiq.density)
+				{
+					return false;
+				}
+			}
 		}
 		return true;
 	}
