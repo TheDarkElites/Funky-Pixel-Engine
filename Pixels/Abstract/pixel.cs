@@ -11,6 +11,7 @@ public abstract partial class Pixel : Node2D
 	public bool conductive;
 	public double toughness;
 	public bool isStatic;
+	public double density;
 	
 	//Physical Attrributes
 	public double temperature;
@@ -22,6 +23,7 @@ public abstract partial class Pixel : Node2D
 		toughness = 1.00;
 		isStatic = false;
 		doUpdate = true;
+		density = 0;
 
 		Name = "PlaceholderPixel";
 	}

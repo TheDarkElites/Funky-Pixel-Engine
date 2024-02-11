@@ -46,7 +46,7 @@ public partial class BasePixelPhysicsSystem : GodotObject
             bool pixelUpdated = false;
             
             //Meta Calulations
-			if(currentPixel.Position.Y > 600)
+			if(currentPixel.Position.Y > 600 || currentPixel.Position.Y <= 0)
 			{
 				if(pixelsToUpdate.Contains(currentPixel))
                 {
@@ -98,6 +98,40 @@ public partial class BasePixelPhysicsSystem : GodotObject
 				if(currentPixel is Liquid && !pixelUpdated)
 				{
 					if(pixelLib.PixelCanMoveTo(new Vector2(currentPixel.Position.X + GLOB.PIXSIZE, currentPixel.Position.Y), ref pixelDict, currentPixel))
+					{
+						pixelLib.MovePixel(new Vector2(currentPixel.Position.X + GLOB.PIXSIZE, currentPixel.Position.Y), currentPixel, ref pixelDict);
+						pixelsUpdated = true;
+						pixelUpdated = true;
+					}
+					else if(pixelLib.PixelCanMoveTo(new Vector2(currentPixel.Position.X - GLOB.PIXSIZE, currentPixel.Position.Y), ref pixelDict, currentPixel))
+					{
+						pixelLib.MovePixel(new Vector2(currentPixel.Position.X - GLOB.PIXSIZE, currentPixel.Position.Y), currentPixel, ref pixelDict);
+						pixelsUpdated = true;
+						pixelUpdated = true;
+					}
+				}
+
+				if(currentPixel is Gas)
+				{
+					if(pixelLib.PixelCanMoveTo(new Vector2(currentPixel.Position.X, currentPixel.Position.Y - GLOB.PIXSIZE), ref pixelDict, currentPixel))
+					{
+						pixelLib.MovePixel(new Vector2(currentPixel.Position.X, currentPixel.Position.Y - GLOB.PIXSIZE), currentPixel, ref pixelDict);
+						pixelsUpdated = true;
+						pixelUpdated = true;
+					} 
+					else if(pixelLib.PixelCanMoveTo(new Vector2(currentPixel.Position.X + GLOB.PIXSIZE, currentPixel.Position.Y - GLOB.PIXSIZE), ref pixelDict, currentPixel) && (rand.Next(1,101) <= (100 * (1 - currentPixel.ductility))))
+					{
+						pixelLib.MovePixel(new Vector2(currentPixel.Position.X + GLOB.PIXSIZE, currentPixel.Position.Y - GLOB.PIXSIZE), currentPixel, ref pixelDict);
+						pixelsUpdated = true;
+						pixelUpdated = true;
+					}
+					else if(pixelLib.PixelCanMoveTo(new Vector2(currentPixel.Position.X - GLOB.PIXSIZE, currentPixel.Position.Y - GLOB.PIXSIZE), ref pixelDict, currentPixel) && (rand.Next(1,101) <= (100 * (1 - currentPixel.ductility))))
+					{
+						pixelLib.MovePixel(new Vector2(currentPixel.Position.X - GLOB.PIXSIZE, currentPixel.Position.Y - GLOB.PIXSIZE), currentPixel, ref pixelDict);
+						pixelsUpdated = true;
+						pixelUpdated = true;
+					}
+					else if(pixelLib.PixelCanMoveTo(new Vector2(currentPixel.Position.X + GLOB.PIXSIZE, currentPixel.Position.Y), ref pixelDict, currentPixel))
 					{
 						pixelLib.MovePixel(new Vector2(currentPixel.Position.X + GLOB.PIXSIZE, currentPixel.Position.Y), currentPixel, ref pixelDict);
 						pixelsUpdated = true;
@@ -180,6 +214,9 @@ public partial class BasePixelPhysicsSystem : GodotObject
 					break;
 				case 3:
 					pixelID = "res://Pixels/water.tscn";
+					break;
+				case 4:
+					pixelID = "res://Pixels/steam.tscn";
 					break;
 				default:
 					pixelID = "res://Pixels/s_pixel.tscn";

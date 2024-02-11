@@ -86,16 +86,20 @@ public class PixelLib
 			{
 				return false;
 			}
-			if(targPix is Liquid && blockingPixel is Solid)
+			if(targPix is not Solid && blockingPixel is Solid)
 			{
 				return false;
 			}
 			if(targPix is Liquid && blockingPixel is Liquid)
+			{			
+				if(targPix.density <= blockingPixel.density)
+				{
+					return false;
+				}
+			}
+			if(targPix is Gas && blockingPixel is Gas)
 			{
-				Liquid targPixLiq = (Liquid)targPix;
-				Liquid blockingPixelLiq = (Liquid)blockingPixel;
-				
-				if(targPixLiq.density <= blockingPixelLiq.density)
+				if(targPix.density <= blockingPixel.density)
 				{
 					return false;
 				}
