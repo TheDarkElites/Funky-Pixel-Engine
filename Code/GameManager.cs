@@ -26,8 +26,9 @@ public partial class GameManager : Node2D
         updateStackBack = new Stack<Pixel>();
         last_physics_update = 0;
 
-        CheckBox UpdateMask = GetNode<CheckBox>("/root/Main/Control/IsPhysicsOn");
-        UpdateMask.Toggled += (tog) => UpdateMaskClear(tog);
+        CheckBox UpdateMask = GetNode<CheckBox>("/root/Main/Control/ShowUpdateMask");
+        UpdateMask.Pressed += () => UpdateMaskClear();
+
     }
     public override void _Process(double delta)
     {
@@ -86,7 +87,7 @@ public partial class GameManager : Node2D
         }
     }
 
-    private void UpdateMaskClear(bool tog = false)
+    private void UpdateMaskClear(bool toggle = true)
     {   
         foreach(Sprite2D mask in updateMaskList)
         {
