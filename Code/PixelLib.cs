@@ -3,15 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class PixelLib
+public static class PixelLib
 {	
 	//Converts normal vec2 position to Pixel grid
-	public Vector2 GetPixelCoordinates(Vector2 cords)
+	public static Vector2 GetPixelCoordinates(Vector2 cords)
 	{
 		return new Vector2(GLOB.PIXSIZE*((int)(cords.X+GLOB.PIXSIZE-1)/GLOB.PIXSIZE), GLOB.PIXSIZE*((int)(cords.Y+GLOB.PIXSIZE-1)/GLOB.PIXSIZE));
 	}
 	//Moves a Pixel
-	public void MovePixel(Vector2 location, Pixel targPix, bool exchange = true)
+	public static void MovePixel(Vector2 location, Pixel targPix, bool exchange = true)
 	{	
 		if(!PixelCanMoveTo(location, targPix))
 		{
@@ -45,7 +45,7 @@ public class PixelLib
 	}
 
 	//Deletes a Pixel
-	public void DeletePixel(Pixel targPix)
+	public static void DeletePixel(Pixel targPix)
 	{
 		targPix.Position = GetPixelCoordinates(targPix.Position);
 
@@ -59,7 +59,7 @@ public class PixelLib
 	}
 
 	//Checks if a Pixel can move to a specific position
-	public bool PixelCanMoveTo(Vector2 location)
+	public static bool PixelCanMoveTo(Vector2 location)
 	{
 		location = GetPixelCoordinates(location);
 		
@@ -70,7 +70,7 @@ public class PixelLib
 		return true;
 	}
 
-	public bool PixelCanMoveTo(Vector2 location, Pixel targPix)
+	public static bool PixelCanMoveTo(Vector2 location, Pixel targPix)
 	{
 		location = GetPixelCoordinates(location);
 		
@@ -108,7 +108,7 @@ public class PixelLib
 		return true;
 	}
 
-	public Pixel CreatePixel(string pixIDPath)
+	public static Pixel CreatePixel(string pixIDPath)
 	{
 		if(!PixelCanMoveTo(Vector2.Zero))
 		{
@@ -126,7 +126,7 @@ public class PixelLib
 		return newPix;
 	}
 
-	public Pixel CreatePixel(string pixIDPath, Vector2 location)
+	public static Pixel CreatePixel(string pixIDPath, Vector2 location)
 	{
 		if(!PixelCanMoveTo(location))
 		{
@@ -141,7 +141,7 @@ public class PixelLib
 	}
 
 	//Returns all Pixel neighbors of type T
-    public Pixel[] GetPixelsInRange(Vector2 location, Type pixType, int radius = 1, bool includeCorners = false, bool includeSelf = false)
+    public static Pixel[] GetPixelsInRange(Vector2 location, Type pixType, int radius = 1, bool includeCorners = false, bool includeSelf = false)
     {   
         List<Pixel> neighbors = new List<Pixel>();
         for(int x = -radius; x <= radius; x++)
