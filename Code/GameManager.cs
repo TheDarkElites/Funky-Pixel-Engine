@@ -4,10 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 public partial class GameManager : Node2D
-{
-    //System that handles basic Pixel physics (when they arent rigid bodies)
-    private List<Sprite2D> updateMaskList;
-    
+{   
     //Pixel Handeling Utilities
     
     //Pixel Stacks
@@ -21,14 +18,11 @@ public partial class GameManager : Node2D
     public override void _Ready()
     {
         pixelDict = new Dictionary<Vector2, Pixel>();
-        updateMaskList = new List<Sprite2D>();
         updateStack = new Stack<Pixel>();
         updateStackBack = new Stack<Pixel>();
         last_physics_update = 0;
 
-        CheckBox UpdateMask = GetNode<CheckBox>("/root/Main/Control/ShowUpdateMask");
-        UpdateMask.Pressed += () => UpdateMaskClear();
-
+        GetNode<CheckBox>("/root/Main/Control/ShowUpdateMask").Pressed += () => GMS.DBS.UpdateMaskClear();
     }
     public override void _Process(double delta)
     {
@@ -37,27 +31,10 @@ public partial class GameManager : Node2D
 		if(last_physics_update > GLOB.PHYSSPEED && GetNode<CheckBox>("/root/Main/Control/IsPhysicsOn").ButtonPressed)
 		{
 			last_physics_update = 0;
-            GMS.BPPS.RunSim(new Stack<Pixel>(updateStack));
-
-            if(GetNode<CheckBox>("/root/Main/Control/ShowUpdateMask").ButtonPressed)
-            {
-                UpdateMaskClear();
-                
-                Stack<Pixel> updateTexturePixelStack = new Stack<Pixel>(updateStack);
-
-                while(updateTexturePixelStack.Count > 0)
-                {
-                    Pixel currentPixel = updateTexturePixelStack.Pop();
-                    if(!IsInstanceValid(currentPixel))
-                    {
-                        continue;
-                    }
-                    Texture2D debugTexture = GD.Load<Texture2D>("res://Textures/DebugRed.png");
-                    Sprite2D newMask = new Sprite2D() {Texture = debugTexture, Scale = new Vector2(2, 2), Position = currentPixel.Position};
-                    updateMaskList.Add(newMask);
-                    AddChild(newMask);
-                }
-            }
+            GMS.BPPS.Fire(new Stack<Pixel>(updateStack));
+            SanatizePixelDict();
+            GMS.AFS.Fire(new Stack<Pixel>(updateStack));
+            GMS.DBS.Fire(new Stack<Pixel>(updateStack));
 
             Dictionary<int,Pixel> updatedPixels = new Dictionary<int,Pixel>();
             updateStack.Clear();
@@ -83,18 +60,8 @@ public partial class GameManager : Node2D
         // Mouse in viewport coordinates.
         if (@event is InputEventMouseButton eventMouseButton)
         {
-            GMS.BPPS.HandlePixelTools();
+            GMS.DBS.HandlePixelTools();
         }
-    }
-
-    private void UpdateMaskClear(bool toggle = true)
-    {   
-        foreach(Sprite2D mask in updateMaskList)
-        {
-            mask.QueueFree();
-        }
-
-        updateMaskList.Clear();
     }
 
     //Lets us queue pixels to update
